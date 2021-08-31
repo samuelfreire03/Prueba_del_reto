@@ -29,10 +29,59 @@ import csv
 El controlador se encarga de mediar entre la vista y el modelo.
 """
 
-# Inicialización del Catálogo de libros
+# Inicialización del Catálogo de obras de arte y artistas
+
+def initCatalog():
+    """
+    Llama la funcion de inicializacion del catalogo del modelo.
+    """
+    catalog = model.newCatalog()
+    return catalog
 
 # Funciones para la carga de datos
+
+def loadData(catalog):
+    """
+    Carga los datos de los archivos y cargar los datos en la
+    estructura de datos
+    """
+    loadArte(catalog)
+    loadArtista(catalog)
+
+
+def loadArte(catalog):
+    """
+    Carga los archivos de las obras de arte y se agrega a la lista de obras de arte
+    """
+    Artefile = cf.data_dir + 'Moma/Artworks-utf8-small.csv'
+    input_file = csv.DictReader(open(Artefile, encoding='utf-8'))
+    for arte in input_file:
+        model.addobraarte(catalog, arte)
+
+
+def loadArtista(catalog):
+    """
+    Carga los archivos de loas artistas y se agrega a la lista de autores
+    """
+    Artistafile = cf.data_dir + 'Moma/Artists-utf8-small.csv'
+    input_file = csv.DictReader(open(Artistafile, encoding='utf-8'))
+    for tag in input_file:
+        model.addartista(catalog, tag)
 
 # Funciones de ordenamiento
 
 # Funciones de consulta sobre el catálogo
+
+def obtener_ultimos_artes(catalog):
+    """
+    Retorna los tres ultimas obras de arte cargadas
+    """
+    ultimostres = model.obtener_ultimos_artes(catalog)
+    return ultimostres
+
+def obtener_ultimos_artistas(catalog):
+    """
+    Retorna los tres ultimos artistas cargados
+    """
+    ultimostresartistas = model.obtener_ultimos_artistas(catalog)
+    return ultimostresartistas

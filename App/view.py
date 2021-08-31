@@ -37,7 +37,47 @@ operación solicitada
 def printMenu():
     print("Bienvenido")
     print("1- Cargar información en el catálogo")
-    print("2- ")
+    print("2- Mostrar los tres primeros y los tres ultimos artistas, segun el orden cronologico")
+    print("3- Mostrar las tres primeras y las tres ultimas obras de arte, segun el orden cronologico")
+    print("4- Clasificacion de obras por tecnica, y algunso datos sobre la tecnica mas usada")
+    print("5- Clasificacion de obras segund su nacionalidad, y datos imprtantes sobre esta la nacionalidad mas repetida")
+    print("6- Calculo del costo total de trasnporte de obras")
+    print("7- Creacion de una nueva exposicion de arte")
+    print("0- Salir")
+
+
+def initCatalog():
+    """
+    Inicializa el catalogo del museo
+    """
+    return controller.initCatalog()
+
+
+def loadData(catalog):
+    """
+    Carga los datos del mueso en la estructura de datos
+    """
+    controller.loadData(catalog)
+
+def printobras_arte(elementos):
+    size = lt.size(elementos)
+    if size:
+        print(' Estos son las ultimas tres obras de arte que se cargaron: ' + '\n')
+        print(elementos['first']['info'],'\n')
+        print(elementos['first']['next']['info'],'\n')
+        print(elementos['first']['next']['next']['info'],'\n')
+    else:
+        print('No se encontraron obras de arte')
+
+def printartistas(elementos):
+    size = lt.size(elementos)
+    if size:
+        print(' Estos son los utlimos tres artistas que se cargaron: ' + '\n')
+        print(elementos['first']['info'],'\n')
+        print(elementos['first']['next']['info'],'\n')
+        print(elementos['first']['next']['next']['info'],'\n')
+    else:
+        print('No se encontraron artistas')
 
 catalog = None
 
@@ -48,7 +88,16 @@ while True:
     printMenu()
     inputs = input('Seleccione una opción para continuar\n')
     if int(inputs[0]) == 1:
-        print("Cargando información de los archivos ....")
+        print("Cargando información de los archivos ...." + '\n')
+        catalog = initCatalog()
+        loadData(catalog)
+        print('Obras de Arte Cargadas cargados: ' + str(lt.size(catalog['obra_de_arte'])))
+        print('Artistas cargados: ' + str(lt.size(catalog['artista'])))
+        obras_arte = controller.obtener_ultimos_artes(catalog)
+        printobras_arte(obras_arte)
+        tres_artistas = controller.obtener_ultimos_artistas(catalog)
+        printartistas(tres_artistas)
+
 
     elif int(inputs[0]) == 2:
         pass
