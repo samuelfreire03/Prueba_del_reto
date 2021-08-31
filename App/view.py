@@ -37,9 +37,9 @@ operación solicitada
 def printMenu():
     print("Bienvenido")
     print("1- Cargar información en el catálogo")
-    print("2- Mostrar los tres primeros y los tres ultimos artistas, segun el orden cronologico")
-    print("3- Mostrar las tres primeras y las tres ultimas obras de arte, segun el orden cronologico")
-    print("4- Clasificacion de obras por tecnica, y algunso datos sobre la tecnica mas usada")
+    print("2- Mostrar los tres primeros y los tres ultimos artistas, segun el orden cronologico de un rango de años")
+    print("3- Mostrar las tres primeras y las tres ultimas obras de arte, segun el orden cronologico de un rango de fechas")
+    print("4- Clasificacion de obras por tecnica, y algunso datos sobre la tecnica mas usada de un artista dado")
     print("5- Clasificacion de obras segund su nacionalidad, y datos imprtantes sobre esta la nacionalidad mas repetida")
     print("6- Calculo del costo total de trasnporte de obras")
     print("7- Creacion de una nueva exposicion de arte")
@@ -100,8 +100,21 @@ while True:
 
 
     elif int(inputs[0]) == 2:
+        año_inicial = input("Porfavor, dijite el año inical del rango que ddesea buscar: ")
+        año_final = input("Porfavor, dijite el año final del rango que ddesea buscar: ") 
+    elif int(inputs[0]) == 3:
+        fecha_inicial = input("Porfavor, dijite la fecha inical del rango que ddesea buscar (Formato: Año/Mes/Dia): ")
+        fecha_final = input("Porfavor, dijite la fecha final del rango que ddesea buscar (Formato: Año/Mes/Dia): ")
+    elif int(inputs[0]) == 4:
+        Artista = input("Porfavor, dijite el nombre del artista qeu desea buscar")
+    elif int(inputs[0]) == 5:
         pass
-
+    elif int(inputs[0]) == 6:
+        Artista = input("Porfavor, dijite el deprtamento que desea conocer el costo del tranposrte")
+    elif int(inputs[0]) == 7:
+        año_inicial = input("Porfavor, dijite el año inical del rango que ddesea buscar: ")
+        año_final = input("Porfavor, dijite el año final del rango que ddesea buscar: ") 
+        area = input("Porfavor, dijite el area disponible para generar la nueva exhibicion: ")  
     else:
         sys.exit(0)
 sys.exit(0)
