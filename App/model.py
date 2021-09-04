@@ -25,6 +25,7 @@
  """
 
 
+from DISClib.DataStructures.arraylist import newList
 import config as cf
 from DISClib.ADT import list as lt
 from DISClib.Algorithms.Sorting import shellsort as sa
@@ -42,11 +43,12 @@ def newCatalog():
     Inicializa el catálogo de Obras de arte. Para Crea en primer lugar dos entradas cada una para autores y obras de artes
     y luego para cada una de estas crea una lista  vacia, donde se guarda la informacion.
     """
-    catalog = {'obra_de_arte': None,'artista': None,'Referencias_Autor_ObradeArte': None}
+    catalog = {'obra_de_arte': None,'artista': None,'nacidos_primero': None,'obras_ordenadas': None}
 
     catalog['obra_de_arte'] = lt.newList()
     catalog['artista'] = lt.newList()
     catalog['nacidos_primero'] = lt.newList()
+    catalog['obras_ordenadas'] = lt.newList('ARRAY_LIST',cmpfunction=compareartistas)
 
     return catalog
 
@@ -55,11 +57,40 @@ def newCatalog():
 def addobraarte(catalog, arte):
     lt.addLast(catalog['obra_de_arte'], arte)
 
+    artistas = arte['ConstituentID'].replace("[","").replace("]","").split(",")
+
+    for artista in artistas:
+        addinfoartista(catalog, artista.strip(), arte)
+
 def addartista(catalog, arte):
     lt.addLast(catalog['artista'], arte)
     lt.addLast(catalog['nacidos_primero'], arte)
 
+def addinfoartista(catalog, codigo_artista, arte):
+    """
+    Adiciona un autor a lista de autores, la cual guarda referencias
+    a los libros de dicho autor
+    """
+    artistas = catalog['obras_ordenadas']
+    posauthor = lt.isPresent(artistas, codigo_artista)
+    if posauthor > 0:
+        artista = lt.getElement(artistas, posauthor)
+    else:
+        artista = newArtista(codigo_artista)
+        lt.addLast(artistas, artista)
+    lt.addLast(artista['obras'], arte)
+
 # Funciones para creacion de datos
+
+def newArtista(codigo_artista):
+    """
+    Crea una nueva estructura para modelar los libros de
+    un autor y su promedio de ratings
+    """
+    artista = {'codigo': "", "obras": None}
+    artista['codigo'] = codigo_artista
+    artista['obras'] = lt.newList('ARRAY_LIST')
+    return artista
 
 # Funciones de consulta
 
@@ -115,10 +146,60 @@ def obtener_primeros_nacidos(catalog):
         lt.addLast(primeros_tres, arte)
     return primeros_tres
 
+def consulta_codigo(catalog,codigo):
+
+    artistas = catalog['artista']
+    obras = catalog['obras_ordenadas']
+    for artista in lt.iterator(artistas):
+        if codigo.lower().strip() in artista['DisplayName'].lower().strip():
+            nombre = artista['ConstituentID']
+
+    for artista in lt.iterator(obras):
+        if nombre == artista['codigo']:
+            artista_final = artista
+
+    return artista_final
+
+def cantidad_tecnicas(artistas):
+
+    cantidad_de_tecnicas_veces = {}
+    tecnicas_final = lt.newList('ARRAY_LIST')
+    for partes in lt.iterator(artistas['obras']):
+        lt.addLast(tecnicas_final,partes['Medium'])
+
+    for i in lt.iterator(tecnicas_final):
+        if i in cantidad_de_tecnicas_veces:
+            cantidad_de_tecnicas_veces[i] += 1
+        else: 
+            cantidad_de_tecnicas_veces[i] = 1
+
+    k = 0
+    for p in cantidad_de_tecnicas_veces:
+        if cantidad_de_tecnicas_veces[p] > k:
+            k = cantidad_de_tecnicas_veces[p]
+            maximo = p
+    
+    return maximo
+
+def consulta_obras(artistas,tecnica):
+
+    obras = lt.newList('')
+    for obra in lt.iterator(artistas['obras']):
+        if obra['Medium'] == tecnica:
+            lt.addLast(obras,obra)
+
+    return obras
+
+
 # Funciones utilizadas para comparar elementos dentro de una lista
 
 def compareratings(artista1, artista2):
     return (float(artista1['BeginDate']) < float(artista2['BeginDate']))
+
+def compareartistas(authorname1, author):
+    if (authorname1.lower() in author['codigo'].lower()):
+        return 0
+    return -1
 
 # Funciones de ordenamiento
 

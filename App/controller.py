@@ -54,7 +54,7 @@ def loadArte(catalog):
     """
     Carga los archivos de las obras de arte y se agrega a la lista de obras de arte
     """
-    Artefile = cf.data_dir + 'Moma/Artworks-utf8-30pct.csv'
+    Artefile = cf.data_dir + 'Moma/Artworks-utf8-small.csv'
     input_file = csv.DictReader(open(Artefile, encoding='utf-8'))
     for arte in input_file:
         model.addobraarte(catalog, arte)
@@ -112,3 +112,15 @@ def obtener_primeros_nacidos(catalog):
     """
     primerostresartistas = model.obtener_primeros_nacidos(catalog)
     return primerostresartistas
+
+def consulta_codigo(catalog,codigo):
+    artista = model.consulta_codigo(catalog,codigo)
+    return artista
+
+def cantidad_tecnicas(catalog):
+    tecnicas = model.cantidad_tecnicas(catalog)
+    return tecnicas
+
+def consulta_obras(catalog,tecnica):
+    obras = model.consulta_obras(catalog,tecnica)
+    return obras

@@ -98,6 +98,16 @@ def print_nacidosprimeros(elementos):
                   artista['BeginDate'] + ' Nacionalidad: ' + artista['Nationality'] + ' Genero: ' + artista['Gender'])
     else:
         print('No se encontraron artistas nacidos')
+
+def print_obras_delautor(elementos):
+    size = lt.size(elementos)
+    if size:
+        print(' Esta es la lista de las obras del autor que fueron hechas con la  misma tecnica: ')
+        for artista in lt.iterator(elementos):
+            print('Titulo: ' + artista['Title'] + '  Fecha: ' +
+                  artista['Date'] + ' Medio: ' + artista['Medium'] + ' Dimensiones: ' + artista['Dimensions'])
+    else:
+        print('No se encontraron artistas nacidos')
     
 
 catalog = None
@@ -144,6 +154,20 @@ while True:
         fecha_final = input("Porfavor, dijite la fecha final del rango que ddesea buscar (Formato: Año/Mes/Dia): ")
     elif int(inputs[0]) == 4:
         Artista = input("Porfavor, dijite el nombre del artista que desea buscar")
+        catalog = initCatalog()
+        loadData(catalog)
+        artista_final = controller.consulta_codigo(catalog,Artista)
+
+        print('Total de obras del artista: ' + str(lt.size(artista_final['obras'])) + '\n')
+
+        tecnicas = controller.cantidad_tecnicas(artista_final)
+
+        print('La tecnica mas utilizada por el autor fue: ' + str(tecnicas) + '\n')
+
+        obras = controller.consulta_obras(artista_final,tecnicas)
+
+        print_obras_delautor(obras)
+
     elif int(inputs[0]) == 5:
         pass
     elif int(inputs[0]) == 6:
