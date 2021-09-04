@@ -79,6 +79,27 @@ def printartistas(elementos):
     else:
         print('No se encontraron artistas')
 
+def print_nacidos(elementos):
+    size = lt.size(elementos)
+    if size:
+        print(' Estos son los ultimos  artistas nacidos en el rango proporcionado: ')
+        for artista in lt.iterator(elementos):
+            print('Nombre: ' + artista['DisplayName'] + '  Nacio: ' +
+                  artista['BeginDate'] + ' Nacionalidad: ' + artista['Nationality'] + ' Genero: ' + artista['Gender'])
+    else:
+        print('No se encontraron artistas nacidos')
+
+def print_nacidosprimeros(elementos):
+    size = lt.size(elementos)
+    if size:
+        print(' Estos son los primeros  artistas nacidos en el rango proporcionado: ')
+        for artista in lt.iterator(elementos):
+            print('Nombre: ' + artista['DisplayName'] + '  Nacio: ' +
+                  artista['BeginDate'] + ' Nacionalidad: ' + artista['Nationality'] + ' Genero: ' + artista['Gender'])
+    else:
+        print('No se encontraron artistas nacidos')
+    
+
 catalog = None
 
 """
@@ -100,13 +121,29 @@ while True:
 
 
     elif int(inputs[0]) == 2:
-        año_inicial = input("Porfavor, dijite el año inical del rango que ddesea buscar: ")
-        año_final = input("Porfavor, dijite el año final del rango que ddesea buscar: ") 
+
+        catalog = initCatalog()
+        loadData(catalog)
+        año_inicial = input("Porfavor, dijite el año inical del rango que desea buscar: ")
+        año_final = input("Porfavor, dijite el año final del rango que desea buscar: ")
+        artistas = controller.nacidos_rango(catalog,int(año_inicial),int(año_final))
+        print('Total de artistas nacidos en el rango dado: ' + str(lt.size(artistas)) + '\n')
+
+        if lt.isEmpty(artistas):
+            print('No nacio ningun artista en este rango')
+        elif lt.size(artistas) < 6:
+            print_nacidosprimeros(artistas)
+        else: 
+            primeros_nacidos = controller.obtener_primeros_nacidos(artistas)
+            print_nacidosprimeros(primeros_nacidos)
+            ultimos_nacidos = controller.obtener_ultimos_nacidos(artistas)
+            print_nacidos(ultimos_nacidos)
+
     elif int(inputs[0]) == 3:
         fecha_inicial = input("Porfavor, dijite la fecha inical del rango que ddesea buscar (Formato: Año/Mes/Dia): ")
         fecha_final = input("Porfavor, dijite la fecha final del rango que ddesea buscar (Formato: Año/Mes/Dia): ")
     elif int(inputs[0]) == 4:
-        Artista = input("Porfavor, dijite el nombre del artista qeu desea buscar")
+        Artista = input("Porfavor, dijite el nombre del artista que desea buscar")
     elif int(inputs[0]) == 5:
         pass
     elif int(inputs[0]) == 6:
