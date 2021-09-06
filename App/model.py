@@ -48,7 +48,7 @@ def newCatalog():
     catalog['obra_de_arte'] = lt.newList()
     catalog['artista'] = lt.newList()
     catalog['nacidos_primero'] = lt.newList()
-    catalog['obras_ordenadas'] = lt.newList('ARRAY_LIST',cmpfunction=compareartistas)
+    catalog['obras_ordenadas'] = lt.newList('ARRAY_LIST',cmpfunction=comparecodigos)
 
     return catalog
 
@@ -181,6 +181,21 @@ def cantidad_tecnicas(artistas):
     
     return maximo
 
+def cantidad_tecnicas_cada(artistas):
+
+    cantidad_de_tecnicas_veces = {}
+    tecnicas_final = lt.newList('ARRAY_LIST')
+    for partes in lt.iterator(artistas['obras']):
+        lt.addLast(tecnicas_final,partes['Medium'])
+
+    for i in lt.iterator(tecnicas_final):
+        if i in cantidad_de_tecnicas_veces:
+            cantidad_de_tecnicas_veces[i] += 1
+        else: 
+            cantidad_de_tecnicas_veces[i] = 1
+
+    return cantidad_de_tecnicas_veces
+
 def consulta_obras(artistas,tecnica):
 
     obras = lt.newList('')
@@ -193,10 +208,10 @@ def consulta_obras(artistas,tecnica):
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 
-def compareratings(artista1, artista2):
+def compareaños(artista1, artista2):
     return (float(artista1['BeginDate']) < float(artista2['BeginDate']))
 
-def compareartistas(authorname1, author):
+def comparecodigos(authorname1, author):
     if (authorname1.lower() in author['codigo'].lower()):
         return 0
     return -1
@@ -204,4 +219,5 @@ def compareartistas(authorname1, author):
 # Funciones de ordenamiento
 
 def sortArtistas(catalog):
-    sa.sort(catalog['nacidos_primero'], compareratings)
+    sa.sort(catalog['nacidos_primero'], compareaños)
+

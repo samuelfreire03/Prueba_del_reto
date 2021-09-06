@@ -77,7 +77,7 @@ def sortArtistas(catalog):
     Ordena los artistas por nacimiento
     """
     model.sortArtistas(catalog)
-
+    
 # Funciones de consulta sobre el catálogo
 
 def obtener_ultimos_artes(catalog):
@@ -119,6 +119,10 @@ def consulta_codigo(catalog,codigo):
 
 def cantidad_tecnicas(catalog):
     tecnicas = model.cantidad_tecnicas(catalog)
+    return tecnicas
+
+def cantidad_tecnicas_cada(catalog):
+    tecnicas = model.cantidad_tecnicas_cada(catalog)
     return tecnicas
 
 def consulta_obras(catalog,tecnica):

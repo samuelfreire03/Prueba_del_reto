@@ -105,9 +105,14 @@ def print_obras_delautor(elementos):
         print(' Esta es la lista de las obras del autor que fueron hechas con la  misma tecnica: ')
         for artista in lt.iterator(elementos):
             print('Titulo: ' + artista['Title'] + '  Fecha: ' +
-                  artista['Date'] + ' Medio: ' + artista['Medium'] + ' Dimensiones: ' + artista['Dimensions'])
+                  artista['Date'] + ' Medio: ' + artista['Medium'] + ' Dimensiones: ' + artista['Dimensions'] + '\n')
     else:
         print('No se encontraron artistas nacidos')
+
+def print_tecnicas(elementos):
+        print(' Esta es la lista de las tecnicas usadas del autor: ')
+        for artista in elementos:
+            print('Titulo: ' + artista + '  Cantidad: ' + str(elementos[artista]))
     
 
 catalog = None
@@ -159,6 +164,10 @@ while True:
         artista_final = controller.consulta_codigo(catalog,Artista)
 
         print('Total de obras del artista: ' + str(lt.size(artista_final['obras'])) + '\n')
+
+        diccionario_tecnicas = controller.cantidad_tecnicas_cada(artista_final)
+
+        print_tecnicas(diccionario_tecnicas)
 
         tecnicas = controller.cantidad_tecnicas(artista_final)
 
