@@ -47,8 +47,7 @@ def loadData(catalog):
     """
     loadArte(catalog)
     loadArtista(catalog)
-    sortArtistas(catalog)
-
+    sortArsortañostistas(catalog)
 
 def loadArte(catalog):
     """
@@ -58,7 +57,6 @@ def loadArte(catalog):
     input_file = csv.DictReader(open(Artefile, encoding='utf-8'))
     for arte in input_file:
         model.addobraarte(catalog, arte)
-
 
 def loadArtista(catalog):
     """
@@ -71,12 +69,18 @@ def loadArtista(catalog):
 
 # Funciones de ordenamiento
 
-
-def sortArtistas(catalog):
+def sortArsortañostistas(catalog):
     """
     Ordena los artistas por nacimiento
     """
     model.sortArtistas(catalog)
+
+def sortcostos(catalog):
+    """
+    Ordena los artistas por nacimiento
+    """
+    orden = model.sortcostos(catalog)
+    return orden
     
 # Funciones de consulta sobre el catálogo
 
@@ -99,6 +103,11 @@ def nacidos_rango(catalog, año_inicial, año_final):
     nacidos_rango = model.nacidos_rango(catalog,año_inicial,año_final)
     return nacidos_rango
 
+def comprados_rango(catalog, fecha_inicial, fecha_final):
+
+    nacidos_rango = model.comprados_rango(catalog,fecha_inicial,fecha_final)
+    return nacidos_rango
+
 def obtener_ultimos_nacidos(catalog):
     """
     Retorna los tres ultimos artistas nacidos
@@ -117,6 +126,10 @@ def consulta_codigo(catalog,codigo):
     artista = model.consulta_codigo(catalog,codigo)
     return artista
 
+def filtrar_depto(catalog,departamento):
+    obras = model.filtrar_depto(catalog,departamento)
+    return obras
+
 def cantidad_tecnicas(catalog):
     tecnicas = model.cantidad_tecnicas(catalog)
     return tecnicas
@@ -128,3 +141,42 @@ def cantidad_tecnicas_cada(catalog):
 def consulta_obras(catalog,tecnica):
     obras = model.consulta_obras(catalog,tecnica)
     return obras
+
+def calculo_de_transporte(catalog):
+    """
+    Ordena los artistas por nacimiento
+    """
+    obras = model.calculo_de_transporte(catalog)
+    return obras
+
+def suma_costo(catalog):
+    """
+    Ordena los artistas por nacimiento
+    """
+    costo = model.suma_costo(catalog)
+    return costo
+
+def suma_peso(catalog):
+    """
+    Ordena los artistas por nacimiento
+    """
+    peso = model.suma_peso(catalog)
+    return peso
+
+def obtener_costosas(catalog):
+    """
+    Retorna los tres ultimos artistas nacidos
+    """
+    costosas = model.obtener_costosas(catalog)
+    return costosas
+
+def buscar_artistas(codigos,catalog):
+    nombres = model.buscar_artistas(codigos,catalog)
+    return nombres
+
+def obtener_antiguas(catalog):
+    """
+    Retorna los tres ultimos artistas nacidos
+    """
+    orden = model.obtener_antiguas(catalog)
+    return orden

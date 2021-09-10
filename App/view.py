@@ -134,7 +134,6 @@ while True:
         tres_artistas = controller.obtener_ultimos_artistas(catalog)
         printartistas(tres_artistas)
 
-
     elif int(inputs[0]) == 2:
 
         catalog = initCatalog()
@@ -180,7 +179,13 @@ while True:
     elif int(inputs[0]) == 5:
         pass
     elif int(inputs[0]) == 6:
-        Artista = input("Porfavor, dijite el deprtamento que desea conocer el costo del tranposrte")
+        Departamento = input("Porfavor, dijite el deprtamento que desea conocer el costo del tranposrte")
+        catalog = initCatalog()
+        loadData(catalog)
+
+        filtradas = controller.filtrar_depto(catalog,Departamento)
+        print(filtradas)
+
     elif int(inputs[0]) == 7:
         año_inicial = input("Porfavor, dijite el año inical del rango que ddesea buscar: ")
         año_final = input("Porfavor, dijite el año final del rango que ddesea buscar: ") 

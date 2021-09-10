@@ -43,12 +43,13 @@ def newCatalog():
     Inicializa el catálogo de Obras de arte. Para Crea en primer lugar dos entradas cada una para autores y obras de artes
     y luego para cada una de estas crea una lista  vacia, donde se guarda la informacion.
     """
-    catalog = {'obra_de_arte': None,'artista': None,'nacidos_primero': None,'obras_ordenadas': None}
+    catalog = {'obra_de_arte': None,'artista': None,'nacidos_primero': None,'obras_ordenadas': None, 'obras_a_llevar':None}
 
     catalog['obra_de_arte'] = lt.newList()
     catalog['artista'] = lt.newList()
     catalog['nacidos_primero'] = lt.newList()
     catalog['obras_ordenadas'] = lt.newList('ARRAY_LIST',cmpfunction=comparecodigos)
+    catalog['obras_a_llevar'] = lt.newList()
 
     return catalog
 
@@ -56,8 +57,11 @@ def newCatalog():
 
 def addobraarte(catalog, arte):
     lt.addLast(catalog['obra_de_arte'], arte)
+    lt.addLast(catalog['obras_a_llevar'], arte)
 
-    artistas = arte['ConstituentID'].replace("[","").replace("]","").split(",")
+    artistas = arte['ConstituentID'].replace("[","")
+    artistas = artistas.replace("]","")
+    artistas = artistas.split(",")
 
     for artista in artistas:
         addinfoartista(catalog, artista.strip(), arte)
@@ -146,18 +150,17 @@ def obtener_primeros_nacidos(catalog):
         lt.addLast(primeros_tres, arte)
     return primeros_tres
 
-def consulta_codigo(catalog,codigo):
+def consulta_codigo(catalog,nombre):
 
     artistas = catalog['artista']
     obras = catalog['obras_ordenadas']
     for artista in lt.iterator(artistas):
-        if codigo.lower().strip() in artista['DisplayName'].lower().strip():
-            nombre = artista['ConstituentID']
+        if nombre.lower().strip() in artista['DisplayName'].lower().strip():
+            codigo = artista['ConstituentID']
 
     for artista in lt.iterator(obras):
-        if nombre == artista['codigo']:
+        if codigo == artista['codigo'].replace("]","").replace("[",""):
             artista_final = artista
-
     return artista_final
 
 def cantidad_tecnicas(artistas):
@@ -205,14 +208,28 @@ def consulta_obras(artistas,tecnica):
 
     return obras
 
+def filtrar_depto(catalog, departamento):
+
+    obras = lt.newList()
+    for p in lt.iterator(catalog['obras_a_llevar']):
+        if p['Department'].lower() == departamento.lower():
+            lt.addLast(obras, p)
+
+    return obras
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 
 def compareaños(artista1, artista2):
     return (float(artista1['BeginDate']) < float(artista2['BeginDate']))
 
+def comparantiguedad(artista1, artista2):
+    if artista2['Date'] == "" or artista1['Date']:
+        return (float(artista1['Date']) < 0)
+    else: 
+        return (float(artista1['Date']) < float(artista2['Date']))
+
 def comparecodigos(authorname1, author):
-    if (authorname1.lower() in author['codigo'].lower()):
+    if (authorname1.lower() == author['codigo'].lower()):
         return 0
     return -1
 
@@ -220,4 +237,7 @@ def comparecodigos(authorname1, author):
 
 def sortArtistas(catalog):
     sa.sort(catalog['nacidos_primero'], compareaños)
+
+def sortantiguedad(catalog):
+    sa.sort(catalog['obras_a_llevar'], comparantiguedad)
 
