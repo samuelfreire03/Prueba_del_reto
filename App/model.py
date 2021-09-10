@@ -45,9 +45,9 @@ def newCatalog():
     """
     catalog = {'obra_de_arte': None,'artista': None,'nacidos_primero': None,'obras_ordenadas': None, 'obras_a_llevar':None}
 
-    catalog['obra_de_arte'] = lt.newList()
-    catalog['artista'] = lt.newList()
-    catalog['nacidos_primero'] = lt.newList()
+    catalog['obra_de_arte'] = lt.newList('ARRAY_LIST')
+    catalog['artista'] = lt.newList('ARRAY_LIST')
+    catalog['nacidos_primero'] = lt.newList('ARRAY_LIST')
     catalog['obras_ordenadas'] = lt.newList('ARRAY_LIST',cmpfunction=comparecodigos)
     catalog['obras_a_llevar'] = lt.newList()
 
@@ -96,6 +96,22 @@ def newArtista(codigo_artista):
     artista['obras'] = lt.newList('ARRAY_LIST')
     return artista
 
+def newCosto(codigo_obra,costo,peso,titulo,artistas,clasificacion,fecha,dimensiones,tecnica):
+    """
+    Crea una nueva estructura para modelar los libros de
+    un autor y su promedio de ratings
+    """
+    artista = {'codigo': "", "costo": None, "peso": None}
+    artista['codigo'] = codigo_obra
+    artista['costo'] = costo
+    artista['peso'] = peso
+    artista['titulo'] = titulo
+    artista['artistas'] = artistas
+    artista['clasificacion'] = clasificacion
+    artista['fecha'] = fecha
+    artista['dimensiones'] = dimensiones
+    artista['tecnica'] = tecnica
+    return artista
 # Funciones de consulta
 
 def obtener_ultimos_artes(catalog):
@@ -217,16 +233,114 @@ def filtrar_depto(catalog, departamento):
 
     return obras
 
+def calculo_de_transporte(catalog):
+
+    obras = lt.newList('ARRAY_LIST')
+    for obra in lt.iterator(catalog):
+
+        peso = obra['Weight (kg)'] 
+        altura = obra['Height (cm)'] 
+        ancho = obra['Width (cm)'] 
+        profundidad = obra['Depth (cm)']
+        longitud = obra['Length (cm)']
+        diametro = obra['Diameter (cm)']
+
+        if (altura == 0 or altura == '') and (ancho == 0 or ancho == ''):
+            costo = 48.00
+
+        elif (longitud != 0 and longitud != '') and (ancho != 0 and ancho != '') and (altura == 0 or altura == ''):
+            costo = (float(longitud)*float(ancho)*72)/10000 
+
+        elif (altura != 0 and altura != '') and (ancho != 0 and ancho != ''):
+            costo = (float(altura)*float(ancho)*72)/10000
+            if (profundidad != 0 and profundidad != ''):
+                costo = max((float(altura)*float(ancho)*72)/10000,(float(altura)*float(ancho)*72*float(profundidad))/10000)
+            if (peso != 0 and peso != ''):
+                costo = max((float(peso) * 72)/10000,(float(altura)*float(ancho)*72)/10000,(float(altura)*float(ancho)*72*float(profundidad))/10000)
+
+        elif (peso != 0 and peso != ''):
+            costo1 = (float(peso) * 72)/10000
+            costo = max(costo1,costo)
+
+        if (diametro != 0 and diametro != '') and (altura != 0 and altura != ''):
+            costo = ((float(diametro)**2)*float(altura)*72*3.14)/10000 
+            
+        if (peso == 0 or peso == ''):
+            pesar = 0
+        else: 
+            pesar = peso 
+        precio = newCosto(obra['ObjectID'],costo,pesar,obra['Title'],obra['ConstituentID'],obra['Classification'],obra['Date'],obra['Dimensions'],obra['Medium'])
+
+        if precio['costo'] == 0:
+            precio['costo'] = 48.00
+        lt.addLast(obras,precio)
+    return obras
+
+def suma_costo(catalog):
+
+    suma = 0
+    for p in lt.iterator(catalog):
+        suma += p['costo']
+
+    return float(suma)
+
+def suma_peso(catalog):
+
+    suma = 0
+    for p in lt.iterator(catalog):
+        suma += p['peso']
+
+    return float(suma)
+
+def obtener_costosas(catalog):
+    """
+    Retorna los tres ultimos artistas cargados
+    """
+    costosas = lt.newList()
+    for cont in range(1, 6):
+        arte = lt.getElement(catalog, cont)
+        lt.addLast(costosas, arte)
+    return costosas
+
+def buscar_artistas(codigos,catalog):
+
+    nombres = lt.newList('ARRAY_LIST')
+    nuevos_codigos = codigos.replace("[","")
+    nuevos_codigos = nuevos_codigos.replace("]","")
+    nuevos_codigos = nuevos_codigos.split(",")
+
+    artistas = catalog['artista']
+    for codigo in nuevos_codigos:
+        for p in lt.iterator(artistas):
+            if codigo == p['ConstituentID']:
+                lt.addLast(nombres,p['DisplayName'])
+    return nombres
+
+def obtener_antiguas(catalog):
+    """
+    Retorna los tres ultimos artistas cargados
+    """
+    ordenadas = sortantiguas(catalog)
+    con_fecha = lt.newList()
+    orden = lt.newList()
+    for obra in lt.iterator(ordenadas):
+        if obra['fecha'] != '':
+            lt.addLast(con_fecha, obra)
+    for cont in range(1, 6):
+        arte = lt.getElement(con_fecha, cont)
+        lt.addLast(orden, arte)
+    return orden
+
 # Funciones utilizadas para comparar elementos dentro de una lista
 
 def compareaños(artista1, artista2):
     return (float(artista1['BeginDate']) < float(artista2['BeginDate']))
 
-def comparantiguedad(artista1, artista2):
-    if artista2['Date'] == "" or artista1['Date']:
-        return (float(artista1['Date']) < 0)
-    else: 
-        return (float(artista1['Date']) < float(artista2['Date']))
+def compareantiguas(artista1, artista2):
+    return ((artista1['fecha']) < (artista2['fecha']))
+
+def comparacostos(artista1, artista2):
+    return (float(artista1['costo']) > float(artista2['costo']))
 
 def comparecodigos(authorname1, author):
     if (authorname1.lower() == author['codigo'].lower()):
@@ -238,6 +352,10 @@ def comparecodigos(authorname1, author):
 def sortArtistas(catalog):
     sa.sort(catalog['nacidos_primero'], compareaños)
 
-def sortantiguedad(catalog):
-    sa.sort(catalog['obras_a_llevar'], comparantiguedad)
+def sortcostos(catalog):
+    orden = sa.sort(catalog, comparacostos)
+    return orden
 
+def sortantiguas(catalog):
+    orden = sa.sort(catalog, compareantiguas)
+    return orden
