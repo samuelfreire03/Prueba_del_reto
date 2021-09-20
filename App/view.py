@@ -20,11 +20,16 @@
  * along withthis program.  If not, see <http://www.gnu.org/licenses/>.
  """
 
+import time
 import config as cf
 import sys
 import controller
 from DISClib.ADT import list as lt
 assert cf
+
+import sys 
+default_limit = 1000 
+sys.setrecursionlimit(default_limit*10)
 
 
 """
@@ -82,42 +87,42 @@ def printartistas(elementos):
 def print_nacidos(elementos):
     size = lt.size(elementos)
     if size:
-        print(' Estos son los ultimos  artistas nacidos en el rango proporcionado: ')
+        print('-'*30 + ' Estos son los ultimos  artistas nacidos en el rango proporcionado: '+ '-'*30 + '\n')
         for artista in lt.iterator(elementos):
-            print('Nombre: ' + artista['DisplayName'] + '  Nacio: ' +
-                  artista['BeginDate'] + ' Nacionalidad: ' + artista['Nationality'] + ' Genero: ' + artista['Gender'])
+            print('NOMBRE: ' + artista['DisplayName'] + '; '+ '  NACIO: ' +
+                  artista['BeginDate'] + '; '+ ' NACIONALIDAD: ' + artista['Nationality'] + '; '+ ' GENERO: ' + artista['Gender']+ '.' + '\n')
     else:
         print('No se encontraron artistas nacidos')
 
 def print_nacidosprimeros(elementos):
     size = lt.size(elementos)
     if size:
-        print(' Estos son los primeros  artistas nacidos en el rango proporcionado: ')
+        print('-'*30 +' Estos son los primeros  artistas nacidos en el rango proporcionado: '+ '-'*30 + '\n')
         for artista in lt.iterator(elementos):
-            print('Nombre: ' + artista['DisplayName'] + '  Nacio: ' +
-                  artista['BeginDate'] + ' Nacionalidad: ' + artista['Nationality'] + ' Genero: ' + artista['Gender'])
+            print('NOMBRE: ' + artista['DisplayName'] + '; '+ '  NACIO: ' +
+                  artista['BeginDate'] + '; '+ ' NACIONALIDAD: ' + artista['Nationality'] + '; '+ ' GENERO: ' + artista['Gender']+ '.' +  '\n')
     else:
         print('No se encontraron artistas nacidos')
 
 def print_obras_delautor(elementos):
     size = lt.size(elementos)
     if size:
-        print( '\n' +' Esta es la lista de las obras del autor que fueron hechas con la  misma tecnica: ')
+        print( '\n' + '-'*30 +' Esta es la lista de las obras del autor que fueron hechas con la  misma tecnica: ' + '-'*30+ '\n')
         for artista in lt.iterator(elementos):
-            print('Titulo: ' + artista['Title'] + '  Fecha: ' +
-                  artista['Date'] + ' Medio: ' + artista['Medium'] + ' Dimensiones: ' + artista['Dimensions'] + '\n')
+            print('TITULO: ' + artista['Title'] + ';   ' + 'FECHA: ' +
+                  artista['Date'] + ';   ' + ' MEDIO: ' + artista['Medium'] + ';   ' + ' DIMENSIONES: ' + artista['Dimensions'] +'.' +   '\n')
     else:
         print('No se encontraron artistas nacidos')
 
 def print_tecnicas(elementos):
-        print(' Esta es la lista de las tecnicas usadas del autor: ' + '\n')
-        for artista in elementos:
-            print('Titulo: ' + artista + '  Cantidad: ' + str(elementos[artista]) + '\n')
+        print('-'*30 + 'Esta es la lista de las tecnicas usadas del autor: ' + '-'*30 + '\n')
+        for artista in lt.iterator(elementos):
+            print('TITULO: ' + artista['Tecnica'] + '  CANTIDAD: ' + str(artista['Cantidad']) + '\n')
 
-def print_obras_costosas(elementos,catalogo):
+def print_obras_antiguas(elementos,catalogo):
     size = lt.size(elementos)
     if size:
-        print( '\n' +' Esta es la lista de las 5 obras mas costosas de departamento: ')
+        print( '\n'+'-'*20+' Esta es la lista de las 5 obras mas antiguas de departamento: '+ '-'*20 + '\n')
         for artista in lt.iterator(elementos):
             nombres = controller.buscar_artistas(artista['artistas'],catalogo)
             artistas = ''
@@ -129,10 +134,30 @@ def print_obras_costosas(elementos,catalogo):
                 tecnica = 'Unknown'
             else: 
                 tecnica = artista['tecnica']
-            print('Titulo: ' + artista['titulo'] + '  artistas: ' +
-                  artistas + ' clasificacion: ' + artista['clasificacion'] + ' fecha: ' + 
-                  artista['fecha'] + ' Dimensiones: ' + artista['dimensiones'] 
-                  + ' tecnica: ' + tecnica + ' costo: ' + str(float(artista['costo'])) + '\n')
+            print('TITULO: ' + artista['titulo'] + '; ' + '  ARTISTAS: ' +
+                  artistas + '; ' + ' CLASIFICACION: ' + artista['clasificacion'] + '; '+ ' FECHA: ' + 
+                  artista['fecha']+ '; ' + ' DIMENSIONES: ' + artista['dimensiones'] + '; '
+                  + ' TECNICA: ' + tecnica+ '; ' + ' COSTO: ' + str(round(artista['costo'],3))+ '.' + '\n')
+
+def print_obras_costosas(elementos,catalogo):
+    size = lt.size(elementos)
+    if size:
+        print('\n' +'-'*20 +' Esta es la lista de las 5 obras mas costosas de departamento: '+ '-'*20 + '\n')
+        for artista in lt.iterator(elementos):
+            nombres = controller.buscar_artistas(artista['artistas'],catalogo)
+            artistas = ''
+            for nombre in lt.iterator(nombres):
+                if lt.size(nombres) > 1:
+                    artistas += nombre + ', '
+                else: artistas = nombre
+            if artista['tecnica'] == '':
+                tecnica = 'Unknown'
+            else: 
+                tecnica = artista['tecnica']
+            print('TITULO: ' + artista['titulo'] + '; ' + '  ARTISTAS: ' +
+                  artistas + '; ' + ' CLASIFICACION: ' + artista['clasificacion'] + '; ' + ' FECHA: ' + 
+                  artista['fecha'] + '; ' + ' DIMENSIONES: ' + artista['dimensiones'] + '; ' 
+                  + ' TECNICA: ' + tecnica + '; ' + ' COSTO: ' + str(round(artista['costo'],3)) + '.' + '\n')
     
 
 catalog = None
@@ -156,12 +181,12 @@ while True:
 
     elif int(inputs[0]) == 2:
 
-        catalog = initCatalog()
-        loadData(catalog)
         año_inicial = input("Porfavor, dijite el año inical del rango que desea buscar: ")
         año_final = input("Porfavor, dijite el año final del rango que desea buscar: ")
+
+        start_time = time.process_time()
         artistas = controller.nacidos_rango(catalog,int(año_inicial),int(año_final))
-        print('Total de artistas nacidos en el rango dado: ' + str(lt.size(artistas)) + '\n')
+        print('' + '\n' +'Total de artistas nacidos en el rango dado: ' + str(lt.size(artistas)) + '\n')
 
         if lt.isEmpty(artistas):
             print('No nacio ningun artista en este rango')
@@ -173,41 +198,48 @@ while True:
             ultimos_nacidos = controller.obtener_ultimos_nacidos(artistas)
             print_nacidos(ultimos_nacidos)
 
+        stop_time = time.process_time()
+        elapsed_time_mseg = (stop_time - start_time)*1000
+        print(elapsed_time_mseg)
+
     elif int(inputs[0]) == 3:
         fecha_inicial = input("Porfavor, dijite la fecha inical del rango que ddesea buscar (Formato: Año/Mes/Dia): ")
         fecha_final = input("Porfavor, dijite la fecha final del rango que ddesea buscar (Formato: Año/Mes/Dia): ")
+        pass
+    
     elif int(inputs[0]) == 4:
         Artista = input("Porfavor, dijite el nombre del artista que desea buscar")
-        catalog = initCatalog()
-        loadData(catalog)
+
+        start_time = time.process_time()
         artista_final = controller.consulta_codigo(catalog,Artista)
 
-        print('\n' +'Total de obras del artista: ' + str(lt.size(artista_final['obras'])) + '\n')
-
-        diccionario_tecnicas = controller.cantidad_tecnicas_cada(artista_final)
-
-        print_tecnicas(diccionario_tecnicas)
+        print('' + '\n' +'Total de obras del artista: ' + str(lt.size(artista_final['obras'])) + '\n')
 
         tecnicas = controller.cantidad_tecnicas(artista_final)
 
-        print('La tecnica mas utilizada por el autor fue: ' + str(tecnicas) + '\n')
+        print_tecnicas(tecnicas[1])
 
-        obras = controller.consulta_obras(artista_final,tecnicas)
+        print('La tecnica mas utilizada por el autor fue: ' + str(tecnicas[0]) + '\n')
+
+        obras = controller.consulta_obras(artista_final,tecnicas[0])
 
         print_obras_delautor(obras)
+
+        stop_time = time.process_time()
+        elapsed_time_mseg = (stop_time - start_time)*1000
+        print(elapsed_time_mseg)
 
     elif int(inputs[0]) == 5:
         pass
     elif int(inputs[0]) == 6:
         Departamento = input("Porfavor, dijite el deprtamento que desea conocer el costo del tranposrte")
-        catalog = initCatalog()
-        loadData(catalog)
 
+        start_time = time.process_time()
         filtradas = controller.filtrar_depto(catalog,Departamento)
         costo = controller.calculo_de_transporte(filtradas)
         ordenadas = controller.sortcostos(costo)
 
-        print('El total de obras a trasnportar es de: ' + str(lt.size(ordenadas)) + '\n')
+        print(''+ '\n'+'El total de obras a trasnportar es de: ' + str(lt.size(ordenadas)) + '\n')
         costo_total = controller.suma_costo(ordenadas)
         print('El costo total del transporte es de: ' + str(costo_total) + '\n')
         peso_total = controller.suma_peso(ordenadas)
@@ -216,8 +248,11 @@ while True:
         print_obras_costosas(costosas,catalog)
 
         orden = controller.obtener_antiguas(ordenadas)
-        print_obras_costosas(orden,catalog)
+        print_obras_antiguas(orden,catalog)
 
+        stop_time = time.process_time()
+        elapsed_time_mseg = (stop_time - start_time)*1000
+        print(elapsed_time_mseg)
 
     elif int(inputs[0]) == 7:
         año_inicial = input("Porfavor, dijite el año inical del rango que ddesea buscar: ")

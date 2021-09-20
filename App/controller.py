@@ -81,6 +81,12 @@ def sortcostos(catalog):
     """
     orden = model.sortcostos(catalog)
     return orden
+
+def sortBooks(catalog, size, ordenamiento):
+    """
+    Ordena los libros por average_rating
+    """
+    return model.sortBooks(catalog, size, ordenamiento)
     
 # Funciones de consulta sobre el catálogo
 
@@ -132,10 +138,6 @@ def filtrar_depto(catalog,departamento):
 
 def cantidad_tecnicas(catalog):
     tecnicas = model.cantidad_tecnicas(catalog)
-    return tecnicas
-
-def cantidad_tecnicas_cada(catalog):
-    tecnicas = model.cantidad_tecnicas_cada(catalog)
     return tecnicas
 
 def consulta_obras(catalog,tecnica):
