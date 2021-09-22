@@ -158,6 +158,38 @@ def print_obras_costosas(elementos,catalogo):
                   artistas + '; ' + ' CLASIFICACION: ' + artista['clasificacion'] + '; ' + ' FECHA: ' + 
                   artista['fecha'] + '; ' + ' DIMENSIONES: ' + artista['dimensiones'] + '; ' 
                   + ' TECNICA: ' + tecnica + '; ' + ' COSTO: ' + str(round(artista['costo'],3)) + '.' + '\n')
+
+def print_obras_rango_primeras(elementos):
+    size = lt.size(elementos)
+    if size:
+        print( '\n' + '-'*30 +' Esta son las primeras obras del rango: ' + '-'*30+ '\n')
+        for obra in lt.iterator(elementos):
+            nombres = controller.buscar_artistas(obra['ConstituentID'],catalog)
+            artistas = ''
+            for nombre in lt.iterator(nombres):
+                if lt.size(nombres) > 1:
+                    artistas += nombre + ', '
+                else: artistas = nombre 
+            print('TITULO: ' + obra['Title'] + ';   ' + '  ARTISTAS: ' + artistas +  ';   ' + '  FECHA: ' + 
+                obra['DateAcquired'] + ';   ' + ' MEDIO: ' + obra['Medium'] + ';   ' + ' DIMENSIONES: ' + obra['Dimensions'] +'.' +   '\n')
+    else:
+        print('No se encontraron artistas nacidos')
+
+def print_obras_rango_ultimas(elementos):
+    size = lt.size(elementos)
+    if size:
+        print( '\n' + '-'*30 +' Esta son las ultimas obras del rango: ' + '-'*30+ '\n')
+        for obra in lt.iterator(elementos):
+            nombres = controller.buscar_artistas(obra['ConstituentID'],catalog)
+            artistas = ''
+            for nombre in lt.iterator(nombres):
+                if lt.size(nombres) > 1:
+                    artistas += nombre + ', '
+                else: artistas = nombre
+            print('TITULO: ' + obra['Title'] + ';   ' + '  ARTISTAS: ' + artistas +  '  FECHA: ' +
+                  obra['DateAcquired'] + ';   ' + ' MEDIO: ' + obra['Medium'] + ';   ' + ' DIMENSIONES: ' + obra['Dimensions'] +'.' +   '\n')
+    else:
+        print('No se encontraron artistas nacidos')
     
 
 catalog = None
@@ -203,9 +235,25 @@ while True:
         print(elapsed_time_mseg)
 
     elif int(inputs[0]) == 3:
-        fecha_inicial = input("Porfavor, dijite la fecha inical del rango que ddesea buscar (Formato: Año/Mes/Dia): ")
-        fecha_final = input("Porfavor, dijite la fecha final del rango que ddesea buscar (Formato: Año/Mes/Dia): ")
-        pass
+        fecha_inicial = input("Porfavor, dijite la fecha inicial en el formato AAAA/MM/DD del rango que desea buscar: ")
+        fecha_final = input("Porfavor, dijite la fecha final en el formato AAAA/MM/DD del rango que desea buscar: ")
+        ordenadas = controller.sortobras(catalog)
+        
+        start_time = time.process_time()
+        nueva_lista = controller.obras_rango(ordenadas,fecha_inicial,fecha_final)
+        print('' + '\n' +'Total de obras del rango: ' + str(lt.size(nueva_lista)) + '\n')
+
+        compras = controller.obtener_compradas(nueva_lista)
+        print('' + '\n' +'Total de obras compradas del rango: ' + str(lt.size(compras)) + '\n')
+
+        primeros_obras = controller.obtener_primeras_obras(nueva_lista)
+        print_obras_rango_primeras(primeros_obras)
+        ultimos_obras = controller.obtener_ultimas_obras(nueva_lista)
+        print_obras_rango_ultimas(ultimos_obras)
+        stop_time = time.process_time()
+        elapsed_time_mseg = (stop_time - start_time)*1000
+        print(elapsed_time_mseg)
+        
     
     elif int(inputs[0]) == 4:
         Artista = input("Porfavor, dijite el nombre del artista que desea buscar")
@@ -213,21 +261,24 @@ while True:
         start_time = time.process_time()
         artista_final = controller.consulta_codigo(catalog,Artista)
 
-        print('' + '\n' +'Total de obras del artista: ' + str(lt.size(artista_final['obras'])) + '\n')
+        if artista_final == '':
+            print('No se encontro el artista')
+        else: 
+            print('' + '\n' +'Total de obras del artista: ' + str(lt.size(artista_final['obras'])) + '\n')
 
-        tecnicas = controller.cantidad_tecnicas(artista_final)
+            tecnicas = controller.cantidad_tecnicas(artista_final)
 
-        print_tecnicas(tecnicas[1])
+            print_tecnicas(tecnicas[1])
 
-        print('La tecnica mas utilizada por el autor fue: ' + str(tecnicas[0]) + '\n')
+            print('La tecnica mas utilizada por el autor fue: ' + str(tecnicas[0]) + '\n')
 
-        obras = controller.consulta_obras(artista_final,tecnicas[0])
+            obras = controller.consulta_obras(artista_final,tecnicas[0])
 
-        print_obras_delautor(obras)
+            print_obras_delautor(obras)
 
-        stop_time = time.process_time()
-        elapsed_time_mseg = (stop_time - start_time)*1000
-        print(elapsed_time_mseg)
+            stop_time = time.process_time()
+            elapsed_time_mseg = (stop_time - start_time)*1000
+            print(elapsed_time_mseg)
 
     elif int(inputs[0]) == 5:
         pass
@@ -236,23 +287,26 @@ while True:
 
         start_time = time.process_time()
         filtradas = controller.filtrar_depto(catalog,Departamento)
-        costo = controller.calculo_de_transporte(filtradas)
-        ordenadas = controller.sortcostos(costo)
+        if lt.isEmpty(filtradas)== True:
+            print('El departamento no se encontro')
+        else: 
+            costo = controller.calculo_de_transporte(filtradas)
+            ordenadas = controller.sortcostos(costo)
 
-        print(''+ '\n'+'El total de obras a trasnportar es de: ' + str(lt.size(ordenadas)) + '\n')
-        costo_total = controller.suma_costo(ordenadas)
-        print('El costo total del transporte es de: ' + str(costo_total) + '\n')
-        peso_total = controller.suma_peso(ordenadas)
-        print('El peso total de trasnporte es de: ' + str(peso_total) + '\n')
-        costosas = controller.obtener_costosas(ordenadas)
-        print_obras_costosas(costosas,catalog)
+            print(''+ '\n'+'El total de obras a trasnportar es de: ' + str(lt.size(ordenadas)) + '\n')
+            costo_total = controller.suma_costo(ordenadas)
+            print('El costo total del transporte es de: ' + str(costo_total) + '\n')
+            peso_total = controller.suma_peso(ordenadas)
+            print('El peso total de trasnporte es de: ' + str(peso_total) + '\n')
+            costosas = controller.obtener_costosas(ordenadas)
+            print_obras_costosas(costosas,catalog)
 
-        orden = controller.obtener_antiguas(ordenadas)
-        print_obras_antiguas(orden,catalog)
+            orden = controller.obtener_antiguas(ordenadas)
+            print_obras_antiguas(orden,catalog)
 
-        stop_time = time.process_time()
-        elapsed_time_mseg = (stop_time - start_time)*1000
-        print(elapsed_time_mseg)
+            stop_time = time.process_time()
+            elapsed_time_mseg = (stop_time - start_time)*1000
+            print(elapsed_time_mseg)
 
     elif int(inputs[0]) == 7:
         año_inicial = input("Porfavor, dijite el año inical del rango que ddesea buscar: ")

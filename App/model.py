@@ -46,13 +46,14 @@ def newCatalog():
     Inicializa el catálogo de Obras de arte. Para Crea en primer lugar dos entradas cada una para autores y obras de artes
     y luego para cada una de estas crea una lista  vacia, donde se guarda la informacion.
     """
-    catalog = {'obra_de_arte': None,'artista': None,'nacidos_primero': None,'obras_ordenadas': None, 'obras_a_llevar':None}
+    catalog = {'obra_de_arte': None,'artista': None,'nacidos_primero': None,'obras_ordenadas': None, 'obras_a_llevar':None,'obras_orden':None}
 
     catalog['obra_de_arte'] = lt.newList('ARRAY_LIST')
     catalog['artista'] = lt.newList('ARRAY_LIST')
     catalog['nacidos_primero'] = lt.newList('ARRAY_LIST')
     catalog['obras_ordenadas'] = lt.newList('ARRAY_LIST',cmpfunction=comparecodigos)
     catalog['obras_a_llevar'] = lt.newList()
+    catalog['obras_orden'] = lt.newList('ARRAY_LIST')
 
     return catalog
 
@@ -61,6 +62,7 @@ def newCatalog():
 def addobraarte(catalog, arte):
     lt.addLast(catalog['obra_de_arte'], arte)
     lt.addLast(catalog['obras_a_llevar'], arte)
+    lt.addLast(catalog['obras_orden'], arte)
 
     artistas = arte['ConstituentID'].replace("[","")
     artistas = artistas.replace("]","")
@@ -183,10 +185,12 @@ def consulta_codigo(catalog,nombre):
 
     artistas = catalog['artista']
     obras = catalog['obras_ordenadas']
+    codigo = ''
     for artista in lt.iterator(artistas):
         if nombre.lower().strip() in artista['DisplayName'].lower().strip():
             codigo = artista['ConstituentID']
 
+    artista_final = ''
     for artista in lt.iterator(obras):
         if codigo == artista['codigo'].replace("]","").replace("[",""):
             artista_final = artista
@@ -311,11 +315,11 @@ def buscar_artistas(codigos,catalog):
     nuevos_codigos = codigos.replace("[","")
     nuevos_codigos = nuevos_codigos.replace("]","")
     nuevos_codigos = nuevos_codigos.split(",")
-
     artistas = catalog['artista']
     for codigo in nuevos_codigos:
+        nuevo = codigo.strip()
         for p in lt.iterator(artistas):
-            if codigo == p['ConstituentID']:
+            if nuevo == p['ConstituentID']:
                 lt.addLast(nombres,p['DisplayName'])
     return nombres
 
@@ -333,6 +337,48 @@ def obtener_antiguas(catalog):
         arte = lt.getElement(con_fecha, cont)
         lt.addLast(orden, arte)
     return orden
+
+def obras_rango(catalog, año_inicial, año_final):
+
+    obras_rango = lt.newList()
+    for obra in lt.iterator(catalog):
+        año_inicial_nuevo = int((date.fromisoformat(año_inicial.replace('/','-'))).strftime("%Y%m%d%H%M%S"))
+        año_final_nuevo = int((date.fromisoformat(año_final.replace('/','-'))).strftime("%Y%m%d%H%M%S"))
+        año_adquisicion = int((date.fromisoformat(obra['DateAcquired'])).strftime("%Y%m%d%H%M%S"))
+        if año_inicial_nuevo < año_adquisicion and año_final_nuevo >= año_adquisicion:
+            lt.addLast(obras_rango,obra)
+    return obras_rango
+
+def obtener_primeras_obras(catalog):
+    """
+    Retorna los tres  primeros artistas nacidos
+    """
+
+    primeros_tres = lt.newList('ARRAY_LIST')
+    for cont in range(1, 4):
+        arte = lt.getElement(catalog, cont)
+        lt.addLast(primeros_tres, arte)
+    return primeros_tres
+
+def obtener_ultimas_obras(catalog):
+    """
+    Retorna los tres  ultimos artistas nacidos
+    """
+    ultimostres = lt.newList('ARRAY_LIST')
+    for cont in range(lt.size(catalog)-2, lt.size(catalog)+1):
+        arte = lt.getElement(catalog, cont)
+        lt.addLast(ultimostres, arte)
+    return ultimostres
+
+def obtener_compradas(catalog):
+    """
+    Retorna los tres  ultimos artistas nacidos
+    """
+    compras = lt.newList('ARRAY_LIST')
+    for p in lt.iterator(catalog):
+        if 'Purchase' in p['CreditLine'] or 'purchase' in p['CreditLine']:
+            lt.addLast(compras, p)
+    return compras
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 
@@ -378,7 +424,7 @@ def sortArtistas(catalog):
     sa.sort(catalog['nacidos_primero'], compareaños)
 
 def sortcostos(catalog):
-    orden = sa.sort(catalog, comparacostos)
+    orden = merge.sort(catalog, comparacostos)
     return orden
 
 def sortantiguas(catalog):
@@ -401,3 +447,14 @@ def sortBooks(catalog, size, ordenamiento):
     stop_time = time.process_time()
     elapsed_time_mseg = (stop_time - start_time)*1000
     return elapsed_time_mseg,sorted_list
+
+def sortobras(catalog):
+
+    obras = catalog['obras_orden']
+    sin_fecha = lt.newList('ARRAY_LIST')
+
+    for p in lt.iterator(obras):
+        if p['DateAcquired'] != '':
+            lt.addLast(sin_fecha,p)
+    sorted_list = merge.sort(sin_fecha, cmpArtworkByDateAcquired)
+    return sorted_list
